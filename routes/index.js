@@ -90,6 +90,7 @@ router.post('/survey/:whichStep', (req, res) => {
     let callActions,
         responseAction,
         done = false,
+
         pressedKey = req.body.dtmfDigits,currentStep = req.params.whichStep;
 
     if(currentStep === 'step1'){
@@ -106,7 +107,6 @@ router.post('/survey/:whichStep', (req, res) => {
                 timeout: 7,
                 callbackUrl: `${APP_URL}/survey/step2`,
             });
-
             done = true;
         } else if (pressedKey == 2) {
 
