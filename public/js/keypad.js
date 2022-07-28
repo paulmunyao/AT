@@ -145,7 +145,8 @@ try {
                 function (incomingcallLog) {
                     var from = incomingcallLog.from;
                     console.log({ incomingcallLog });
-                    uiChange_callIncoming(from);
+                    // uiChange_callIncoming(from);
+                    jQuery('#output').text(from);
 
                     jQuery('#call').hide();
                     jQuery('#receive').show();
