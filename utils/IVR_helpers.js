@@ -183,6 +183,11 @@ class VoiceHelper {
 
         return callAction;
     }
+
+    shiftEndpoints({callbackUrl}){
+        let callAction = `<Redirect>${callbackUrl}</Redirect>`;
+        return callAction;
+    }
 }
 
 module.exports = {
