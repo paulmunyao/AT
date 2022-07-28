@@ -85,6 +85,7 @@ router.post('/survey', (req, res) => {
     if (pressedKey === 'undefined') {
         res.end();
     }
+
     if (!isNaN(pressedKey)) {
         pressedKey = Number(pressedKey);
 
@@ -100,7 +101,7 @@ router.post('/survey', (req, res) => {
                 customerNumber: null,
             });
             // callActions = ATVoice.partialRecord({
-            //     introductionText: `Our doctor is currently seeing another patient. He will attend to you shortly, In the meantime, tell us how you are feeling and then press the hashkey.`,
+            //     introductionText: `Our sessionIddoctor is currently seeing another patient. He will attend to you shortly, In the meantime, tell us how you are feeling and then press the hashkey.`,
             //     audioProcessingUrl: null,
             // });
             done = true;
