@@ -15,6 +15,12 @@ const ATVoice = new VoiceHelper({
 
 const CustomerSession = new Map();
 const CallAgents = new Map();
+const SurveyQuestions = new Map();
+SurveyQuestions.set(1,{
+    info:''
+})
+
+SurveyQuestions.get
 
 router.get('/', async (req, res) => {
     res.render('keypad.html.ejs');
@@ -61,10 +67,11 @@ router.post('/callback_url', async (req, res) => {
             // Here we assume the call is incoming from a customer to the hospital
             // Lead customer to survey form: DTMF
             callActions = ATVoice.survey({
-                textPrompt: `Welcome to A T hospital. Press 1 to record your symptoms. Press 2 to speak to Doctor Michael. After selecting your option, press the hash key`,
+                textPrompt: `Welcome to counties Talking. Press 1 for emergency. Press 2 for Funds.
+                Press 3 for Land. After selecting your option, press the hash key`,
                 finishOnKey: '#',
                 timeout: 7,
-                callbackUrl: `${APP_URL}/survey`,
+                callbackUrl: `${APP_URL}/survey/step1`,
             });
         }
 
@@ -77,47 +84,82 @@ router.post('/callback_url', async (req, res) => {
     }
 });
 
-router.post('/survey', (req, res) => {
+router.post('/survey/:whichStep', (req, res) => {
+
+
     let callActions,
         responseAction,
         done = false,
-        pressedKey = req.body.dtmfDigits;
-    if (pressedKey === 'undefined') {
-        res.end();
-    }
 
-    if (!isNaN(pressedKey)) {
+        pressedKey = req.body.dtmfDigits,currentStep = req.params.whichStep;
+
+    if(currentStep === 'step1'){
+        if (!isNaN(pressedKey)) {
         pressedKey = Number(pressedKey);
 
         console.log(`Pressed ${pressedKey}`);
         if (pressedKey == 1) {
             console.log(`Here pass`);
-            let callRepresentativeName = ATVoice.generateATClientName({
-                firstName: 'browser1',
+             
+            callActions = ATVoice.survey({
+                textPrompt: `Press 1 for ambulance. Press 2 for fire. Press 3 for Crime. After selecting your option, press the hash key`,
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step2`,
             });
-            callActions = ATVoice.converseViaBrowser({
-                role: 'CUSTOMER_TO_VCC',
-                lastRegisteredClient: callRepresentativeName,
-                customerNumber: null,
-            });
-            // callActions = ATVoice.partialRecord({
-            //     introductionText: `Our sessionIddoctor is currently seeing another patient. He will attend to you shortly, In the meantime, tell us how you are feeling and then press the hashkey.`,
-            //     audioProcessingUrl: null,
-            // });
             done = true;
         } else if (pressedKey == 2) {
-            // console.log(`Passed other`);
-            // callActions = ATVoice.linkCustomerToOfflineAgent({
-            //     offline_phone: '+254773841221',
-            // });
-            // done = true;
 
-            callActions = ATVoice.saySomething({
-                speech: 'Sorry, you did not press 1 nor 2. Goodbye.',
+            callActions = ATVoice.survey({
+                textPrompt: `Press 1 for Title deed search. Press 2 for Pay land rates. Press 3 for Apply for building approvals. After selecting your option, press the hash key`,
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step2`,
             });
-            done = true;
+        } else if (pressedKey == 3) {
+
+            callActions = ATVoice.survey({
+                textPrompt: `Press 1 for Busary. Press 2 for Youth fund. Press 3 for Women fund. After selecting your option, press the hash key`,
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step2`,
+            });
         }
     }
+    }
+    if(currentStep === 'step2'){
+        if (pressedKey == 1) {
+
+            callActions = ATVoice.survey({
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step3`,
+            });
+        }
+        else if (pressedKey == 2) {
+
+            callActions = ATVoice.survey({
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step3`,
+            });
+        }
+        else if (pressedKey == 3) {
+
+            callActions = ATVoice.survey({
+                finishOnKey: '#',
+                timeout: 7,
+                callbackUrl: `${APP_URL}/survey/step3`,
+            });
+        }
+    }
+
+
+    if (pressedKey === 'undefined') {
+        res.end();
+    };
+
+    
 
     if (!done) {
         callActions = ATVoice.saySomething({
