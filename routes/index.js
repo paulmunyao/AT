@@ -1,6 +1,8 @@
 'use strict';
 const router = require('express').Router();
+const Menu = require('../constants');
 const { VoiceHelper } = require('../utils/IVR_helpers');
+
 
 let AT_apiKey = process.env.AT_APP_APIKEY,
     AT_username = process.env.AT_APP_USERNAME,
@@ -40,6 +42,7 @@ router.post('/capability-token', async (req, res) => {
 });
 
 router.post('/callback_url', async (req, res) => {
+    // return res.end();
     try {
         let clientDialedNumber = req.body.clientDialedNumber;
         let callActions, responseAction, redirectUrl, lastRegisteredClient;
@@ -67,8 +70,8 @@ router.post('/callback_url', async (req, res) => {
                 CustomerSession.set(sessionID, '');
             }
             callActions = ATVoice.survey({
-                textPrompt: `Welcome to counties Talking. Press 1 for emergency. Press 2 for Funds.
-                Press 3 for Land. After selecting your option, press the hash key`,
+                textPrompt: `Welcome to counties Talking. Press 1 for emergency. Press 2 for Land.
+                Press 3 for Funds. Press 4 for Health. After selecting your option, press the hash key`,
                 finishOnKey: '#',
                 timeout: 7,
                 callbackUrl: `${APP_URL}/survey/step1`,
@@ -97,8 +100,11 @@ router.post('/survey/:whichStep', (req, res) => {
     } else {
         CustomerSession.set(sessionID, session + '.' + pressedKey);
     }
+    
+    session = CustomerSession.get(sessionID);
 
-    let response = Menu.get(currentStep);
+    console.log("session value", session);
+    let response = Menu[session];
     if (response) {
         if (response.end) {
             callActions = ATVoice.saySomething({
